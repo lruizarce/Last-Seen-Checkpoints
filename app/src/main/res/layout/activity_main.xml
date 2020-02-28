@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <EditText
-        android:id="@+id/mac_address_input"
+        android:id="@+id/mac_address_filter_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="MAC ADDRESS"
@@ -25,6 +25,6 @@
         android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mac_address_input" />
+        app:layout_constraintTop_toBottomOf="@id/mac_address_filter_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

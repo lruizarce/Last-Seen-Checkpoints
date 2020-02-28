@@ -9,14 +9,20 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.EditText
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import kotlin.text.StringBuilder
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mBluetoothAdapter: BluetoothAdapter
-    private lateinit var mTextArea: TextView
+    private lateinit var inputFilter: EditText
+    private lateinit var listOfDevicesDisplay: TextView
 
+    private val listOfDevices = ArrayList<String>()
     private val mReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i("Bluetooth", "BroadcastReceiver onReceive()")
@@ -29,7 +35,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        mTextArea = findViewById(R.id.discovered_devices)
+        inputFilter = findViewById(R.id.mac_address_filter_input)
+        listOfDevicesDisplay = findViewById(R.id.discovered_devices)
+
+        inputFilter.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s : Editable) {
+
+            }
+
+            override fun beforeTextChanged(s : CharSequence, start : Int, count : Int, after : Int) {
+
+            }
+
+            override fun onTextChanged(s : CharSequence, start : Int, before : Int, count : Int) {
+                displayDevices()
+            }
+        })
 
         setUpBroadcastReceiver()
     }
@@ -97,7 +118,24 @@ class MainActivity : AppCompatActivity() {
                 }
 
             Log.i("Bluetooth", deviceName + "\n" + device)
-            mTextArea.text = mTextArea.text.toString() + ("$deviceName, $device \n\n")
+
+            listOfDevices.add("$deviceName \n $device")
+
+            displayDevices()
+        }
+    }
+
+    private fun displayDevices() {
+        val listOfDevicesStringBuilder = StringBuilder()
+
+        for (device in listOfDevices) {
+            if (inputFilter.text.isEmpty()) {
+                listOfDevicesStringBuilder.append(device).append("\n\n")
+            } else if (device.contains(inputFilter.text.toString())) {
+                listOfDevicesStringBuilder.append(device).append("\n\n")
+            }
+
+            listOfDevicesDisplay.text = listOfDevicesStringBuilder.toString()
         }
     }
 
