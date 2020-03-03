@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        Log.i("Bluetooth", "PERMISSION RESULT")
+
         when (requestCode) {
             ACCESS_FINE_LOCATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
@@ -157,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         listOfDevicesDisplay.text = ""
     }
 
-    private fun logDevicesFound() {
+    fun logDevicesFound() {
         val currentTime = LocalDateTime.now()
         val logBatchStringBuilder = StringBuilder()
         val fileOutputStream : FileOutputStream
