@@ -17,14 +17,23 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/discovered_devices"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_margin="25dp"
-        android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mac_address_filter_input" />
+        app:layout_constraintTop_toBottomOf="@id/mac_address_filter_input">
+
+        <TextView
+            android:id="@+id/discovered_devices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
