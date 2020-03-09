@@ -1,6 +1,5 @@
 package com.example.lastseencheckpoints
 
-import android.app.Instrumentation
 import android.os.Build
 import android.util.Log
 import androidx.test.espresso.Espresso.onView

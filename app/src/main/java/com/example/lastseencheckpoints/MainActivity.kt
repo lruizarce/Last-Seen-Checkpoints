@@ -99,7 +99,10 @@ class MainActivity : AppCompatActivity() {
         val thread = object: Thread() {
             override fun run() {
                 while (true) {
-                    clearDevicesAndDisplay()
+                    runOnUiThread{
+                        clearDevicesAndDisplay()
+
+                    }
                     setUpDiscovery()
                     sleep(15000)
                     logDevicesFound()
