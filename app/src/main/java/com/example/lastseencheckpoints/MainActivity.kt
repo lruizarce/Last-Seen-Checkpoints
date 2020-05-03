@@ -15,10 +15,14 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.lang.Exception
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.text.StringBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -96,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val thread = object: Thread() {
+        val scanForBluetoothDevicesThread = object: Thread() {
             override fun run() {
                 while (true) {
                     runOnUiThread{
@@ -110,7 +114,49 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        thread.start()
+        val listenForLogDataRequestsThread = object: Thread() {
+            override fun run() {
+                val lastSeenUUID = UUID.fromString(UUID_STRING)
+
+                Log.i("LAST_SEEN_BLUETOOTH", "LISTENING FOR REQUESTS")
+
+                while (true) {
+                    val mmServerSocket = mBluetoothAdapter!!.listenUsingInsecureRfcommWithServiceRecord(SERVICE_NAME, lastSeenUUID)
+                    val inputStream : InputStream
+                    val requestMessage = ByteArray(255)
+                    val requestMessageString : String
+                    val socket = mmServerSocket.accept()
+
+                    Log.i("LAST_SEEN_BLUETOOTH", "RECEIVING REQUEST")
+
+                    inputStream = socket.inputStream
+                    inputStream.read(requestMessage)
+                    requestMessageString = requestMessage.toString(Charsets.UTF_8).substring(0, 17)
+
+                    Log.i("LAST_SEEN_BLUETOOTH", requestMessageString)
+
+                    val logDataStringBuilder = StringBuilder()
+                    val logDataFile = File(filesDir, fileName)
+
+                    logDataFile.forEachLine(Charsets.UTF_8) {
+                        if (it.contains(requestMessageString)) {
+                            Log.i("LAST_SEEN_BLUETOOTH", it);
+                            logDataStringBuilder.append(it).append("\n")
+                        }
+                    }
+
+                    val outputStream = socket.outputStream
+                    outputStream.write(logDataStringBuilder.toString().toByteArray())
+
+                    Log.i("LAST_SEEN_BLUETOOTH", "REPLIED TO REQUEST")
+
+                    socket.close()
+                }
+            }
+        }
+
+        scanForBluetoothDevicesThread.start()
+        listenForLogDataRequestsThread.start()
     }
 
     private fun setUpDiscovery() {
@@ -187,5 +233,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val ACCESS_FINE_LOCATION = 1
+        private const val SERVICE_NAME = "LastSeenLogDataRequest"
+        private const val UUID_STRING = "a3c8734a-0aea-439e-8e06-9d7098dcf3a8"
     }
 }
